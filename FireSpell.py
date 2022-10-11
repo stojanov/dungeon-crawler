@@ -1,8 +1,8 @@
 from Spell import spell, spell_type
 
-FIRESPELL_DURATION = 0.5
-FIRESPELL_DPS = 33
-FIRESPELL_COST = 40
+FIRESPELL_DURATION = 0.6
+FIRESPELL_DPS = 50
+FIRESPELL_COST = 33
 
 class firespell(spell):
     def __init__(self, fromplayer):

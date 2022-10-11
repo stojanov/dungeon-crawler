@@ -17,21 +17,27 @@ class skeleton_1(entity):
         self.vel = (0, 0)
         self.grid = None
         self.hp = SKELETON_1_HP
+        self.shouldDie = False
     
     def do_dmg(self, dmg):
         self.hp -= dmg
+        print(self.hp)
     
     def attack(self):
         return SKELETON_1_DMG
     
     def should_die(self):
-        return False
+        return self.shouldDie
 
     def move(self, dir):
         self.dir = dir
 
     def update(self, dt):
         super().update(dt)
+        
+        if self.hp <= 0:
+            self.shouldDie = True
+        
         self.gridpos = pixel_to_grid(self.pos)
         
         velX = self.dir[0] * SKELETON_MOVEMENT_VEL * dt

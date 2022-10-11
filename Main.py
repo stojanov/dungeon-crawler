@@ -4,6 +4,7 @@ from pygame.locals import *
 from Block import block_type
 from Camera import camera
 from Game import game
+from GameStatesController import game_states_controller, game_states
 from LevelLoader import load_level
 from Player import player
 from Spell import spell
@@ -12,6 +13,8 @@ from Spritesheet import spritesheet
 from FireSpell import firespell
 from GameConsts import *
 from LevelEditor import main_editor
+from MainMenu import main_menu
+import enum
 
 def main_game(level):
     pygame.init()
@@ -22,11 +25,13 @@ def main_game(level):
     window_clear = pygame.Rect(0, 0, DisplaySize[0], DisplaySize[1])
     
     c = camera(DisplaySize, (300, 300))
-    
+
     p = player(Sprites["player"])
 
     dungeon_crawler = game(BlockSize)
+    gameState = game_states_controller()
 
+    menu = main_menu(gameState)
     dungeon_crawler.init_player(p)
     dungeon_crawler.init_camera(c)
     dungeon_crawler.load_level(level)
@@ -34,39 +39,31 @@ def main_game(level):
     fpsClock = pygame.time.Clock()
     dt = 0.016
     
-    path = []
-    
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
             
-            dungeon_crawler.onevent(event)
-            if event.type == KEYDOWN:
-                if event.key == K_F1:
-                    path = [] # temp
+            if gameState.state == game_states.main_menu:
+                menu.onevent(event)
+                
+            if gameState.state == game_states.game:
+                dungeon_crawler.onevent(event)
         
         pygame.draw.rect(display, ClearColor, window_clear)
         
-            # if event.type == MOUSEBUTTONUP:
-            #     block = dungeon_crawler.map.block_at_pos(event.pos)
-            #     if block != None:
-            #         local_path = findpath_d(
-            #             dungeon_crawler.map.pixel_to_grid((p.pos[0] + 32, p.pos[1] + 32)),
-            #             dungeon_crawler.map,
-            #             lambda block: block.type == block_type.wall)
-            #         if local_path != None:
-            #             path = local_path
-            #         else:
-            #             print('cannot find solution')
-                    
         if dt > 0.1:
             dt = 0.02
-            
-        dungeon_crawler.update(dt, pygame.key.get_pressed())
-        dungeon_crawler.render(display)
-
+        
+        if gameState.state == game_states.game:
+            dungeon_crawler.update(dt, pygame.key.get_pressed())
+            dungeon_crawler.render(display)
+        
+        if gameState.state == game_states.main_menu:
+            menu.update(dt, pygame.key.get_pressed())
+            menu.render(display)
+       
         pygame.display.flip()
         dt = fpsClock.tick(Fps) / 1000
 
@@ -81,6 +78,8 @@ if __name__ == '__main__':
             editorLaunch = True
         else:
             level = arg
+            
+            
             
     if editorLaunch:
         main_editor(level)

@@ -135,8 +135,9 @@ class game(object):
             nodes = path_dijkstra_nodes(p_gridpos, self.map.map, lambda block: block.type == block_type.wall, 5)
         
         for i in range(self.spawnable.count()):
+            if self.spawnable.is_removed(i):
+                continue
             e = ent[i]
-            e.update(dt)
             
             if e.type == entity_type.skeleton1:
                 skeleton_dist = dist(self.player.pos, e.pos)
@@ -146,7 +147,14 @@ class game(object):
                     e.move(dir)
                 elif skeleton_dist < (BlockSize[0] + BlockSize[0] / 3):
                     self.player.do_dmg(e.attack() * dt)
-                    
+
+            if isinstance(e, firespell):
+                # Plain and simple traverse all the enemies and check for collisions
+                for skelIdx in range(self.spawnable.count()):
+                    skeleton = ent[skelIdx]
+                    if skeleton.type == entity_type.skeleton1:
+                        if dist(e.pos, skeleton.pos) <= BlockSize[0]:
+                            skeleton.do_dmg(e.dps * dt)
 
             if isinstance(e, pickable):
                 if dist(self.player.pos, e.pos) <= BlockSize[0]:        
@@ -160,13 +168,11 @@ class game(object):
                             self.player.add_mana(e.mana)
                             e.destroy()
 
-
+            e.update(dt)
+            
             if e.should_die():
-                removedents.append(i)
-
-        for idx in removedents:
-            self.spawnable.remove(idx)
-
+                self.spawnable.remove(i)
+                
         self.player.store_pos()
         self.player.update(dt)
         self.map.update(dt)
@@ -177,6 +183,8 @@ class game(object):
         ent = self.spawnable.entities() 
         
         for i in range(self.spawnable.count()):
+            if self.spawnable.is_removed(i):
+                continue
             ent[i].render(display, offset)
         
         for pos in self.path:

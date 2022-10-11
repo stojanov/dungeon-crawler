@@ -10,6 +10,16 @@ firespell_sheet = spritesheet('assets/Fire_Spell.png', ImageBlockSize)
 skeleton_sheet = spritesheet('assets/Skeleton.png', ImageBlockSize)
 hpflask = spritesheet('assets/flask_1.png', ImageBlockSize)
 manaflask = spritesheet('assets/flask_2.png', ImageBlockSize)
+main_bg = spritesheet('assets/Bg.png', (1920, 1080))
+main_buttons = spritesheet('assets/Buttons.png', (200, 80))
+
+StartingScreen = {
+    "bg": sprite(main_bg.image_at_block((0, 0)), (1280, 720)),
+    "play_normal": sprite(main_buttons.image_at_block((0, 0)), MainMenuButtonSize),
+    "play_selected": sprite(main_buttons.image_at_block((0, 1)), MainMenuButtonSize),
+    "tutorial_normal": sprite(main_buttons.image_at_block((0, 2)), MainMenuButtonSize),
+    "tutorial_selected": sprite(main_buttons.image_at_block((0, 3)), MainMenuButtonSize)
+}
 
 Fonts = {
     "mainfont": pygame.font.Font("assets/Pixeboy.ttf", 32)

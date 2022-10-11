@@ -5,5 +5,6 @@ ClearColor = (0, 0, 0)
 Fps = 60
 ImageBlockSize = (16, 16)
 BlockSize = (64, 64)
+MainMenuButtonSize = (200, 80)
 
 LEVEL_DIR = "./levels/"
